@@ -1,24 +1,27 @@
-import './style.css'
-import javascriptLogo from './javascript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.js'
+/* helper functions */
+import { fetchUsers } from "./utils/fetchData"
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`
+import "./style.css"
+import { handleData } from "./utils/handleData"
+import { modalComp } from "./components/modalComp"
 
-setupCounter(document.querySelector('#counter'))
+export async function init() {
+	app.innerText = "loading ..."
+	const usersArray = await fetchUsers()
+
+	if (!usersArray.length) {
+		app.innerText = "Something went very very wrong ... " + usersArray
+		const img = new Image()
+		img.classList.add("error-img")
+		img.src = "./assets/offline.jpg"
+		app.appendChild(img)
+		return
+	}
+	app.innerText = ""
+	// check if this is not an empty array
+	if (usersArray.length) handleData(usersArray)
+
+	app.appendChild(modalComp())
+}
+
+init()
